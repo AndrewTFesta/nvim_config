@@ -16,4 +16,4 @@ sudo apt install -y neovim python3-neovim
 sudo apt install -y fonts-noto-color-emoji
 
 # add languages
-sudo apt install -y golang-go nodejs
+sudo apt install -y golang-go nodejs npm
