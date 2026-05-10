@@ -1,19 +1,52 @@
-# install wsl2 and configure windows terminal
-# https://learn.microsoft.com/en-us/windows/wsl/install
-# https://learn.microsoft.com/en-us/windows/terminal/install
-# Guide in installing neovim and setting up kickstart
-# https://github.com/nvim-lua/kickstart.nvim?tab=readme-ov-file
-# ttps://github.com/nvim-lua/kickstart.nvim?tab=readme-ov-file#Install-Recipes
-mkdir tmp && cd tmp
-curl https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/CascadiaMono.zip
+#!/usr/bin/env fish
 
-sudo add-apt-repository ppa:neovim-ppa/unstable -y
-sudo apt update
-sudo apt install -y make gcc ripgrep unzip git xclip fd-find
-sudo apt install -y neovim python3-neovim
+# Node + Go
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -; or exit 1
+sudo apt install -y nodejs golang-go; or exit 1
+node --version
+npm --version
+go version
 
+# npm global prefix without sudo
+mkdir -p ~/.npm-global
+npm config set prefix ~/.npm-global
+
+set -l npm_line 'set -gx PATH $HOME/.npm-global/bin $PATH'
+if not grep -qxF "$npm_line" ~/.config/fish/config.fish 2>/dev/null
+    echo $npm_line >> ~/.config/fish/config.fish
+end
+set -gx PATH $HOME/.npm-global/bin $PATH
+
+# Persistent `fd` abbreviation
+set -l abbr_line 'abbr -a fd fdfind'
+if not grep -qxF "$abbr_line" ~/.config/fish/config.fish 2>/dev/null
+    echo $abbr_line >> ~/.config/fish/config.fish
+end
+
+# QoL + build tools + clipboard (X11 and Wayland) + fd + emoji
+sudo apt install -y make gcc ripgrep unzip git curl xclip wl-clipboard fd-find; or exit 1
 # If we want emojis
-sudo apt install -y fonts-noto-color-emoji
+sudo apt install -y fonts-noto-color-emoji; or exit 1
 
-# add languages
-sudo apt install -y golang-go nodejs npm
+# Working dir for downloads
+set tmpdir (mktemp -d)
+cd $tmpdir
+
+# CascadiaMono Nerd Font
+mkdir -p ~/.local/share/fonts
+curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaMono.zip; or exit 1
+unzip -o CascadiaMono.zip -d ~/.local/share/fonts/CascadiaMono; or exit 1
+fc-cache -f ~/.local/share/fonts
+
+# Neovim from tarball
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz; or exit 1
+sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz; or exit 1
+sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+
+cd $OLDPWD
+rm -rf $tmpdir
+
+# Python provider for nvim (only needed if you use Python plugins)
+sudo apt install -y python3-pynvim; or exit 1
+
+echo "Done. Open a new shell or run: source ~/.config/fish/config.fish"
