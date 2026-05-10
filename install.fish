@@ -45,9 +45,12 @@ unzip -o CascadiaMono.zip -d ~/.local/share/fonts/CascadiaMono; or exit 1
 fc-cache -f ~/.local/share/fonts
 
 # Neovim from tarball
-curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz; or exit 1
-sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz; or exit 1
-sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+sudo rm -rf /opt/nvim-linux-x86_64
+sudo mkdir -p /opt/nvim-linux-x86_64
+sudo chmod a+rX /opt/nvim-linux-x86_64
+sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/
 
 cd $OLDPWD
 rm -rf $tmpdir

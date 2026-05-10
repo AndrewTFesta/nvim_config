@@ -50,8 +50,11 @@ fc-cache -f "$HOME/.local/share/fonts"
 
 # Neovim from tarball
 curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+sudo rm -rf /opt/nvim-linux-x86_64
+sudo mkdir -p /opt/nvim-linux-x86_64
+sudo chmod a+rX /opt/nvim-linux-x86_64
 sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
-sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/
 
 # Python provider for nvim (only needed if you use Python plugins)
 sudo apt install -y python3-pynvim
