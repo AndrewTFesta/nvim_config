@@ -50,4 +50,25 @@ sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 # Python provider for nvim (only needed if you use Python plugins)
 sudo apt install -y python3-pynvim
 
+# Resolve absolute path to the directory containing this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Link this repo to ~/.config/nvim so neovim picks it up
+NVIM_CONFIG="$HOME/.config/nvim"
+mkdir -p "$HOME/.config"
+
+if [ -L "$NVIM_CONFIG" ]; then
+    # Existing symlink — replace it
+    echo "Replacing existing symlink at $NVIM_CONFIG"
+    rm "$NVIM_CONFIG"
+elif [ -e "$NVIM_CONFIG" ]; then
+    # Existing real directory or file — back it up
+    BACKUP="$NVIM_CONFIG.backup-$(date +%Y%m%d-%H%M%S)"
+    echo "Backing up existing $NVIM_CONFIG to $BACKUP"
+    mv "$NVIM_CONFIG" "$BACKUP"
+fi
+
+ln -s "$SCRIPT_DIR" "$NVIM_CONFIG"
+echo "Linked $NVIM_CONFIG -> $SCRIPT_DIR"
+
 echo "Done. Open a new shell or run: source ~/.bashrc"

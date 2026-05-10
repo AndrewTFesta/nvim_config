@@ -49,4 +49,25 @@ rm -rf $tmpdir
 # Python provider for nvim (only needed if you use Python plugins)
 sudo apt install -y python3-pynvim; or exit 1
 
+# Resolve absolute path to the directory containing this script
+set SCRIPT_DIR (realpath (dirname (status filename)))
+
+# Link this repo to ~/.config/nvim so neovim picks it up
+set nvim_config "$HOME/.config/nvim"
+mkdir -p ~/.config
+
+if test -L "$nvim_config"
+    # Existing symlink — replace it
+    echo "Replacing existing symlink at $nvim_config"
+    rm "$nvim_config"
+else if test -e "$nvim_config"
+    # Existing real directory or file — back it up
+    set backup "$nvim_config.backup-"(date +%Y%m%d-%H%M%S)
+    echo "Backing up existing $nvim_config to $backup"
+    mv "$nvim_config" "$backup"
+end
+
+ln -s "$SCRIPT_DIR" "$nvim_config"
+echo "Linked $nvim_config -> $SCRIPT_DIR"
+
 echo "Done. Open a new shell or run: source ~/.config/fish/config.fish"
