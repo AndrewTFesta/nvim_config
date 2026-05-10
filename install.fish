@@ -11,6 +11,8 @@ node --version
 npm --version
 go version
 
+npm install -g tree-sitter-cli
+
 # npm global prefix without sudo
 mkdir -p ~/.npm-global
 npm config set prefix ~/.npm-global
