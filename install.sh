@@ -1,19 +1,53 @@
-# install wsl2 and configure windows terminal
-# https://learn.microsoft.com/en-us/windows/wsl/install
-# https://learn.microsoft.com/en-us/windows/terminal/install
-# Guide in installing neovim and setting up kickstart
-# https://github.com/nvim-lua/kickstart.nvim?tab=readme-ov-file
-# ttps://github.com/nvim-lua/kickstart.nvim?tab=readme-ov-file#Install-Recipes
-mkdir tmp && cd tmp
-curl https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/CascadiaMono.zip
+#!/usr/bin/env bash
+set -euo pipefail
 
-sudo add-apt-repository ppa:neovim-ppa/unstable -y
-sudo apt update
-sudo apt install -y make gcc ripgrep unzip git xclip fd-find
-sudo apt install -y neovim python3-neovim
+# Node + Go
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt install -y nodejs golang-go
+node --version
+npm --version
+go version
 
+# npm global prefix without sudo
+mkdir -p "$HOME/.npm-global"
+npm config set prefix "$HOME/.npm-global"
+LINE='export PATH="$HOME/.npm-global/bin:$PATH"'
+if ! grep -qxF "$LINE" "$HOME/.bashrc" 2>/dev/null; then
+    echo "$LINE" >> "$HOME/.bashrc"
+fi
+export PATH="$HOME/.npm-global/bin:$PATH"
+
+# QoL + build tools + clipboard (X11 and Wayland) + fd + emoji
+sudo apt install -y make gcc ripgrep unzip git curl xclip wl-clipboard fd-find
 # If we want emojis
 sudo apt install -y fonts-noto-color-emoji
 
-# add languages
-sudo apt install -y golang-go nodejs npm
+# Persistent `fd` alias via symlink in user PATH (after fd-find is installed)
+mkdir -p "$HOME/.local/bin"
+ln -sf "$(command -v fdfind)" "$HOME/.local/bin/fd"
+LINE='export PATH="$HOME/.local/bin:$PATH"'
+if ! grep -qxF "$LINE" "$HOME/.bashrc" 2>/dev/null; then
+    echo "$LINE" >> "$HOME/.bashrc"
+fi
+export PATH="$HOME/.local/bin:$PATH"
+
+# Working dir for downloads
+TMPDIR=$(mktemp -d)
+trap 'rm -rf "$TMPDIR"' EXIT
+cd "$TMPDIR"
+
+# CascadiaMono Nerd Font
+mkdir -p "$HOME/.local/share/fonts"
+curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaMono.zip
+unzip -o CascadiaMono.zip -d "$HOME/.local/share/fonts/CascadiaMono"
+fc-cache -f "$HOME/.local/share/fonts"
+
+# Neovim from tarball
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
+sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+
+# Python provider for nvim (only needed if you use Python plugins)
+sudo apt install -y python3-pynvim
+
+echo "Done. Open a new shell or run: source ~/.bashrc"
