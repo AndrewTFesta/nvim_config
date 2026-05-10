@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Resolve absolute path to the directory containing this script
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+echo "Running script from $SCRIPT_DIR"
+
 # Node + Go
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt install -y nodejs golang-go
@@ -49,9 +53,6 @@ sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 
 # Python provider for nvim (only needed if you use Python plugins)
 sudo apt install -y python3-pynvim
-
-# Resolve absolute path to the directory containing this script
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # Link this repo to ~/.config/nvim so neovim picks it up
 NVIM_CONFIG="$HOME/.config/nvim"
