@@ -220,7 +220,7 @@ do
     numhl = true
   }
   vim.opt.signcolumn = 'yes:1'
-  
+
   local function set_gitsigns_colors()
     vim.api.nvim_set_hl(0, 'GitSignsAdd',    { fg = '#00ff87' })
     vim.api.nvim_set_hl(0, 'GitSignsChange', { fg = '#ffaf00' })
@@ -265,7 +265,7 @@ do
   --  - yiiq - [Y]ank [I]nside [I]+1 [Q]uote
   --  - ci'  - [C]hange [I]nside [']quote
   require('mini.ai').setup {
-    -- NOTE: Avoid conflicts with the built-in incremental selection mappings on Neovim>=0.12 (see `:help treesitter-incremental-selection`)
+    -- NOTE: Avoid conflicts with the built-in incremental selection mappings on Neovim>=0.12
     mappings = {
       around_next = 'aa',
       inside_next = 'ii',
